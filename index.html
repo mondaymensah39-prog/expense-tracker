@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Expense Tracker</h1>
+
+  <form id="expense-form">
+    <select id="category" required>
+      <option value="">Choose category</option>
+      <option value="Food">Food</option>
+      <option value="Transport">Transport</option>
+      <option value="Bills">Bills</option>
+      <option value="Fun">Fun</option>
+    </select>
+    <input type="number" id="amount" placeholder="Amount" min="0" step="0.01" required>
+    <button type="submit">Add</button>
+  </form>
+
+  <label>
+    <select id="filter">
+      <option value="All">All</option>
+      <option value="Food">Food</option>
+      <option value="Transport">Transport</option>
+      <option value="Bills">Bills</option>
+      <option value="Fun">Fun</option>
+    </select>
+  </label>
+ 
+
+  <ul id="expense-list"></ul>
+   <div id="total-section">
+    <p>Total: <span id="total">0.00</span></p>
+   </div>
+  
+  <script src="script.js"></script>
+  <section>
+  
+     <footer>
+    <p>&copy; 2026 Monday Mensah. All rights reserved.</p>
+  </footer>
+  </section>
+
+</body>
+</html>
