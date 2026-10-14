@@ -5,8 +5,12 @@ const filterSelect = document.getElementById("filter");
 const list = document.getElementById("expense-list");
 const totalEl = document.getElementById("total");
 
-// Load saved expenses from localStorage, or start with an empty list
 let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+
+const categories = ["Food", "Transport", "Bills", "Fun"];
+
+// Which expense is currently being edited (null means none)
+let editingExpense = null;
 
 function saveExpenses() {
   localStorage.setItem("expenses", JSON.stringify(expenses));
@@ -25,21 +29,77 @@ function render() {
     total += expense.amount;
 
     const li = document.createElement("li");
-    li.textContent = `${expense.category}: ${expense.amount.toFixed(2)} `;
 
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
+    if (expense === editingExpense) {
+      // EDIT MODE: show a dropdown, an amount box and a Save button
 
-    deleteButton.addEventListener("click", function () {
-      // Find this expense's position in the full list, then remove it
-      const index = expenses.indexOf(expense);
-      expenses.splice(index, 1);
+      const categorySelect = document.createElement("select");
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        if (cat === expense.category) {
+          option.selected = true;
+        }
+        categorySelect.appendChild(option);
+      });
 
-      saveExpenses();
-      render();
-    });
+      const amountBox = document.createElement("input");
+      amountBox.type = "number";
+      amountBox.step = "0.01";
+      amountBox.value = expense.amount;
 
-    li.appendChild(deleteButton);
+      const saveButton = document.createElement("button");
+      saveButton.textContent = "Save";
+
+      saveButton.addEventListener("click", function () {
+        const newAmount = parseFloat(amountBox.value);
+
+        if (isNaN(newAmount)) {
+          alert("Please enter a valid amount");
+          return;
+        }
+
+        expense.category = categorySelect.value;
+        expense.amount = newAmount;
+        editingExpense = null; // leave edit mode
+
+        saveExpenses();
+        render();
+      });
+
+      li.appendChild(categorySelect);
+      li.appendChild(amountBox);
+      li.appendChild(saveButton);
+
+    } else {
+      // NORMAL MODE: show the text with Edit and Delete buttons
+
+      li.textContent = `${expense.category}: ${expense.amount.toFixed(2)} `;
+
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+
+      editButton.addEventListener("click", function () {
+        editingExpense = expense; // remember which expense to edit
+        render();
+      });
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Delete";
+
+      deleteButton.addEventListener("click", function () {
+        const index = expenses.indexOf(expense);
+        expenses.splice(index, 1);
+
+        saveExpenses();
+        render();
+      });
+
+      li.appendChild(editButton);
+      li.appendChild(deleteButton);
+    }
+
     list.appendChild(li);
   });
 
@@ -47,8 +107,7 @@ function render() {
 }
 
 form.addEventListener("submit", function (event) {
-  event.preventDefault(); // stop the page from reloading
-
+  event.preventDefault(); 
   expenses.push({
     category: categoryInput.value,
     amount: parseFloat(amountInput.value)
